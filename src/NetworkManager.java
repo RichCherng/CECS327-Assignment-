@@ -16,12 +16,14 @@ public class NetworkManager extends Thread{
 	public NetworkManager(boolean pServer) throws IOException{
 
 		if(pServer){
+			/** Start off as Server **/
 			serverSocket = new ServerSocket(PORT);
-			serverSocket.setSoTimeout(1000);
+			serverSocket.setSoTimeout(10000);
 			acceptConnection();
 
 			System.out.println("Server listening on port " + serverSocket.getLocalPort());
 		} else {
+			/** Start off as client **/
 			System.out.println("Connecting on port " + PORT);
 			socket = new Socket("localhost", PORT);
 			System.out.println("Connected to " + socket.getRemoteSocketAddress());
@@ -33,10 +35,29 @@ public class NetworkManager extends Thread{
 	}
 
 	private void acceptConnection() throws IOException{
+		socket = serverSocket.accept();
+		System.out.println("Accepted connection from " + socket.getRemoteSocketAddress());
+	}
+
+	public void run(){
 		while(true){
-			socket = serverSocket.accept();
-			System.out.println("Accepted connection from " + socket.getRemoteSocketAddress());
+			try {
+				String request = recv();
+				System.out.println(request);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+	}
+
+	private String recv() throws IOException{
+		return in.readLine();
+	}
+
+	private void send(String data){
+		out.println(data);
+		out.flush();
 	}
 
 }
