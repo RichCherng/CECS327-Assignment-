@@ -12,13 +12,16 @@ public class TokenManager extends Thread{
 	private Queue<Integer> que_status;
 	private String token = null; // Null is unavailable
 	private boolean token_remote;
+	private NetworkManager networkMng;
 
-	public TokenManager(){
+	public TokenManager(NetworkManager pNetworkMng){
 
 		que_status 	= new LinkedList<Integer>();
 		que 		= new LinkedList<Worker>();
 		lock_que	= new ReentrantLock();
 		lock_token 	= new ReentrantLock();
+		token_remote = true;
+		networkMng 	= pNetworkMng;
 	}
 
 	public void run(){
@@ -33,19 +36,23 @@ public class TokenManager extends Thread{
 			// If queue not empty or next requester is not known
 			if(!que_status.isEmpty()){
 				request_status = que_status.remove();
+//				System.out.println(token_remote);
 				if(token_remote){
 					// Token at remote host
 					// send request to remote host
+					System.out.println("Request token from remote");
+					networkMng.requestToken();
 				}
 			}
 			lock_que.unlock();
 
 //			System.out.println("Request status  " + request_status);
 			while(token == null || token_remote || (que_status.isEmpty() && request_status == 0)){
+//				System.out.println("wait");
 				// Wait for next action
 //				System.out.println(token);
 				try {
-					sleep(10);
+					sleep(100);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -67,6 +74,8 @@ public class TokenManager extends Thread{
 				// If next requester is remote
 				if(request_status == REMOTE){
 					// Send token to remote host
+					System.out.println("Send Token to remote");
+					networkMng.sendToken(token);
 					token = null;
 					token_remote = true;
 				}
@@ -84,14 +93,22 @@ public class TokenManager extends Thread{
 	}
 
 	public void setToken(String pToken){
+		lock_token.lock();
 		token = pToken;
 		token_remote = false;
+		lock_token.unlock();
 	}
 
 	public void returnToken(String pToken){
 		lock_token.lock();
 		token = pToken;
 		lock_token.unlock();
+	}
+
+	public void remoteRequestToken(){
+		lock_que.lock();
+		que_status.add(REMOTE);
+		lock_que.unlock();
 	}
 
 }

@@ -34,7 +34,6 @@ public class Server {
 				System.out.println("Socket timed out");
 			} catch (IOException e){
 				e.printStackTrace();
-				break;
 			} finally{
 				try {
 					server.close();
@@ -47,14 +46,14 @@ public class Server {
 	}
 
 
-	public static void main(String[] args){
-		Server server = null;
-		try {
-			server = new Server(4524);
-			server.start();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
+//	public static void main(String[] args){
+//		Server server = null;
+//		try {
+//			server = new Server(4524);
+//			server.start();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
 }

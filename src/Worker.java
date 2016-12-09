@@ -24,20 +24,23 @@ public class Worker extends Thread{
 					e.printStackTrace();
 				}
 			}
+			// Increament token
+			int tokenValue = Integer.parseInt(token) + 1;
+			System.out.println(id + " - Token Value: " + tokenValue);
 //			System.out.println(token);
 
 			// return token to local Token manager
-			aTM.returnToken(token);
+			aTM.returnToken(tokenValue+"");
 			token = null;
 			// sleep for 50 msec
 			try {
-				sleep(100);
+				sleep(50);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-			System.out.println(id + " : " + i);
+//			System.out.println(id + " : " + i);
 		}
 	}
 

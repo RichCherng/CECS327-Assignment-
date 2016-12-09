@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Main {
@@ -25,15 +26,31 @@ public class Main {
 //		}
 
 		TokenManager tokenMng = null;
+		NetworkManager networkMng = null;
 		if(args.length > 0){
 			// Start first, get the token
 			if(args[0].equals("-s")){
-				tokenMng = new TokenManager();
-				tokenMng.setToken("token");
+				try {
+					// Start socket as listener
+					networkMng = new NetworkManager(true);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				tokenMng = new TokenManager(networkMng);
+				tokenMng.setToken("1");
 			}
 		} else {
+			// Start socket as client
+			try {
+				networkMng = new NetworkManager(false);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 			// Start with no token
-			tokenMng = new TokenManager();
+			tokenMng = new TokenManager(networkMng);
 		}
 
 		// Spawn worker
@@ -43,6 +60,8 @@ public class Main {
 			w.start();
 			workerList.add(w);
 		}
+		networkMng.setTokenManager(tokenMng);
+		networkMng.start();
 		tokenMng.start();
 //		tokenMng.addWorker()
 	}
